@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Login Page</title>
+    <meta charset="UTF-8">
+    <title>UHCL Campus Lost and Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="loginpage.css">
 </head>
-
 <body>
-    <p>checking for page</p>
+
+    <!-- Website Header -->
+    <header class="site-header">
+        <h1>UHCL Campus Lost and Found</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="login-card">
+            <h2>Login</h2>
+
+            <form id="loginForm">
+                <label for="id">Student / Employee ID</label>
+                <input type="text" id="id" placeholder="Enter your ID" required>
+
+                <label for="username">UHCL Username</label>
+                <input type="text" id="username" placeholder="Enter your UHCL username" required>
+
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById("id").value.trim();
+            const username = document.getElementById("username").value.trim();
+
+            if (!id || !username) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            alert("Login successful ");
+            // window.location.href = "homepage.html";
+        });
+    </script>
+
 </body>
 </html>
