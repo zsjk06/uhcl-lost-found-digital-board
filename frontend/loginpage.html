@@ -19,8 +19,6 @@
             <h2>Login</h2>
 
             <form id="loginForm">
-                <label for="id">Student / Employee ID</label>
-                <input type="text" id="id" placeholder="Enter your ID" required>
 
                 <label for="username">UHCL Username</label>
                 <input type="text" id="username" placeholder="Enter your UHCL username" required>
@@ -30,7 +28,7 @@
         </div>
     </main>
 
-    <script>
+    <!-- <script>
         document.getElementById("loginForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -45,7 +43,11 @@
             alert("Login successful ");
             // window.location.href = "homepage.html";
         });
-    </script>
+    </script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="login.js"></script>
+
 
 </body>
 </html>
