@@ -46,10 +46,294 @@
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <div class="w-100 text-center">
+                <a class="navbar-brand fw-bold fs-4" href="#">UHCL LOST & FOUND</a>
+            </div>
+            
+            <div class="position-absolute end-0 me-3">
+                <div class="dropdown user-dropdown">
+                    <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span>user name</span>
+                        <i class="bi bi-chevron-down ms-2 small"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>user logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<h1>Agile project new update</h1>
-<p>My first change. Test.</p>
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Posts Section -->
+            <div class="col-lg-9">
+                <!-- Filter Dropdown -->
+                <div class="mb-4">
+                    <select class="form-select w-auto" id="filterSelect">
+                        <option selected>Filter by...</option>
+                        <option value="lost">Lost Items</option>
+                        <option value="found">Found Items</option>
+                        <option value="claimed">Claimed Items</option>
+                        <option value="all">All Items</option>
+                    </select>
+                </div>
 
+                <!-- Posts Grid -->
+                <div class="row" id="postsContainer">
+                    <!-- Post 1 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card post-card h-100">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="https://picsum.photos/seed/wallet/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title">Post 1</h5>
+                                            <span class="badge bg-warning status-badge">Lost</span>
+                                        </div>
+                                        <p class="card-text small">
+                                            <strong>Item:</strong> Black leather wallet<br>
+                                            <strong>Location:</strong> Library building<br>
+                                            <strong>Date:</strong> February 10, 2026
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Posted 2 days ago</small>
+                                            <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 2 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card post-card h-100">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="https://picsum.photos/seed/iphone/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title">Post 2</h5>
+                                            <span class="badge bg-success status-badge">Found</span>
+                                        </div>
+                                        <p class="card-text small">
+                                            <strong>Item:</strong> Silver iPhone 13<br>
+                                            <strong>Location:</strong> Student Center<br>
+                                            <strong>Date:</strong> February 11, 2026
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Posted 1 day ago</small>
+                                            <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional sample posts -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card post-card h-100">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="https://picsum.photos/seed/backpack/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title">Post 3</h5>
+                                            <span class="badge bg-info status-badge">Claimed</span>
+                                        </div>
+                                        <p class="card-text small">
+                                            <strong>Item:</strong> Blue backpack<br>
+                                            <strong>Location:</strong> Gymnasium<br>
+                                            <strong>Date:</strong> February 9, 2026
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Posted 3 days ago</small>
+                                            <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card post-card h-100">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="https://picsum.photos/seed/keys/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title">Post 4</h5>
+                                            <span class="badge bg-success status-badge">Found</span>
+                                        </div>
+                                        <p class="card-text small">
+                                            <strong>Item:</strong> Car keys with Toyota keychain<br>
+                                            <strong>Location:</strong> Parking Lot B<br>
+                                            <strong>Date:</strong> February 12, 2026
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Posted today</small>
+                                            <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="position-fixed" style="bottom: 2rem; right: 2rem; z-index: 1000;">
+        <button class="btn btn-primary floating-btn" data-bs-toggle="modal" data-bs-target="#createPostModal" title="Create Post">
+            <i class="bi bi-plus-lg fs-4"></i>
+        </button>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel">Create New Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createPostForm">
+                        <div class="mb-3">
+                            <label for="postType" class="form-label">Post Type</label>
+                            <select class="form-select" id="postType" required>
+                                <option value="">Select type...</option>
+                                <option value="lost">Lost Item</option>
+                                <option value="found">Found Item</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="itemTitle" class="form-label">Item Title</label>
+                            <input type="text" class="form-control" id="itemTitle" placeholder="e.g., Black leather wallet" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="itemDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="itemDescription" rows="3" placeholder="Provide detailed description of the item..." required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="itemLocation" class="form-label">Location</label>
+                                <select class="form-select" id="itemLocation" required>
+                                    <option value="">Select location...</option>
+                                    <option value="BAYOU">Bayou Building (BAYOU)</option>
+                                    <option value="ARBOR">Arbor Building (ARBOR)</option>
+                                    <option value="DELTA">Delta Building (DELTA)</option>
+                                    <option value="STEM">STEM and Classroom Building (STEM)</option>
+                                    <option value="SSCB">Student Services and Classroom Building (SSCB)</option>
+                                    <option value="RWC">Recreation and Wellness Center (RWC)</option>
+                                    <option value="HUNTER">Hunter Hall (HUNTER)</option>
+                                    <option value="UFA">University Forest Apartments (UFA)</option>
+                                    <option value="NOA">North Office Annex (NOA)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="itemDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="itemDate" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="itemPhoto" class="form-label">Item Photo (Optional)</label>
+                            <input type="file" class="form-control" id="itemPhoto" accept="image/*">
+                            <div class="mt-2">
+                                <img id="photoPreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contactInfo" class="form-label">Contact Information</label>
+                            <input type="text" class="form-control" id="contactInfo" placeholder="Email or phone number" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitPost()">Submit Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set today's date as default
+        document.getElementById('itemDate').valueAsDate = new Date();
+        
+        // Photo preview functionality
+        document.getElementById('itemPhoto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('photoPreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+        
+        // Filter functionality
+        document.getElementById('filterSelect').addEventListener('change', function() {
+            const filterValue = this.value;
+            const posts = document.querySelectorAll('.post-card');
+            
+            posts.forEach(post => {
+                const statusBadge = post.querySelector('.status-badge');
+                const status = statusBadge.textContent.toLowerCase();
+                
+                if (filterValue === 'all' || status === filterValue) {
+                    post.closest('.col-md-6').style.display = 'block';
+                } else {
+                    post.closest('.col-md-6').style.display = 'none';
+                }
+            });
+        });
+        
+        // Submit post function
+        function submitPost() {
+            const form = document.getElementById('createPostForm');
+            if (form.checkValidity()) {
+                // Here you would normally send data to backend
+                alert('Post submitted successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+                form.reset();
+                document.getElementById('itemDate').valueAsDate = new Date();
+            } else {
+                form.reportValidity();
+            }
+        }
+    </script>
 </body>
 </html>
-
