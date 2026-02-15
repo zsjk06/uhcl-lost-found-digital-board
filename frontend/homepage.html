@@ -57,7 +57,7 @@
                 <div class="dropdown user-dropdown">
                     <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle me-2"></i>
-                        <span>user name</span>
+                        <span id="usernameDisplay">user name</span>
                         <i class="bi bi-chevron-down ms-2 small"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -283,57 +283,144 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Set today's date as default
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Supabase client
+    const supabaseUrl = 'https://pmolaajaloowazzmjhoi.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2xhYWphbG9vd2F6em1qaG9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MjczNjcsImV4cCI6MjA4NjQwMzM2N30.cOMKqQ_4gjVdFsIYEFY0CwlRWWYgSBw09pLZ8Je41Wg';
+    const { createClient } = supabase;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // Get current user from login
+    const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { id: null, email: "User" };
+    document.getElementById('usernameDisplay').textContent = currentUser.email || "User";
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem("currentUser");
+        window.location.href = "loginpage.html";
+    }
+
+    // Set today's date
+    document.getElementById('itemDate').valueAsDate = new Date();
+
+    // Photo preview
+    document.getElementById('itemPhoto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('photoPreview');
+        if(file){
+            const reader = new FileReader();
+            reader.onload = function(e){ preview.src = e.target.result; preview.style.display = 'block'; }
+            reader.readAsDataURL(file);
+        } else { preview.style.display = 'none'; }
+    });
+
+    // Fetch and display posts
+    async function loadPosts(){
+        const { data: items, error } = await supabaseClient
+            .from('items')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        const container = document.getElementById('postsContainer');
+        container.innerHTML = '';
+        if(error){ console.error(error); container.innerHTML='<p>Error loading items.</p>'; return; }
+        if(items.length===0){ container.innerHTML='<p>No items posted yet.</p>'; return; }
+
+        items.forEach(item => {
+            container.insertAdjacentHTML('beforeend', `
+                <div class="col-md-6 mb-4">
+                    <div class="card post-card h-100">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="${item.photo_url || 'https://picsum.photos/200/150'}" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title">${item.title}</h5>
+                                        <span class="badge bg-${item.type === 'lost' ? 'warning' : 'success'}">
+    ${item.type}
+</span>
+
+<span class="badge bg-${item.status === 'claimed' ? 'secondary' : 'primary'}">
+    ${item.status}
+</span>
+
+
+                                        
+                                    </div>
+                                    <p class="card-text small">
+                                        <strong>Description:</strong> ${item.description}<br>
+                                        <strong>Location:</strong> ${item.location || 'N/A'}<br>
+                                        <strong>Date:</strong> ${new Date(item.created_at).toLocaleDateString()}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Posted ${timeAgo(item.created_at)}</small>
+                                        <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    function timeAgo(dateStr){
+        const diff = Math.floor((new Date() - new Date(dateStr))/1000);
+        if(diff<60) return `${diff} sec ago`;
+        if(diff<3600) return `${Math.floor(diff/60)} min ago`;
+        if(diff<86400) return `${Math.floor(diff/3600)} hr ago`;
+        return `${Math.floor(diff/86400)} days ago`;
+    }
+
+    // Filter functionality
+    document.getElementById('filterSelect').addEventListener('change', function() {
+        const filterValue = this.value;
+        const posts = document.querySelectorAll('.post-card');
+        posts.forEach(post=>{
+            const status = post.querySelector('.status-badge').textContent.toLowerCase();
+            if(filterValue==='all' || status===filterValue) post.closest('.col-md-6').style.display='block';
+            else post.closest('.col-md-6').style.display='none';
+        });
+    });
+
+    // Submit new post
+    async function submitPost(){
+        const form = document.getElementById('createPostForm');
+        if(!form.checkValidity()){ form.reportValidity(); return; }
+
+        const post = {
+            type: document.getElementById('postType').value,
+            title: document.getElementById('itemTitle').value.trim(),
+            description: document.getElementById('itemDescription').value.trim(),
+            location: document.getElementById('itemLocation').value,
+            created_at: document.getElementById('itemDate').value,
+            user_id: currentUser.id,
+            photo_url: document.getElementById('photoPreview').src || null,
+            status: 'unclaimed'
+        };
+
+        const { data, error } = await supabaseClient.from('items').insert([post]);
+        if(error){ console.error(error); alert('Error posting item.'); return; }
+
+        alert('Post submitted successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+        form.reset();
         document.getElementById('itemDate').valueAsDate = new Date();
-        
-        // Photo preview functionality
-        document.getElementById('itemPhoto').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('photoPreview');
-            
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-        
-        // Filter functionality
-        document.getElementById('filterSelect').addEventListener('change', function() {
-            const filterValue = this.value;
-            const posts = document.querySelectorAll('.post-card');
-            
-            posts.forEach(post => {
-                const statusBadge = post.querySelector('.status-badge');
-                const status = statusBadge.textContent.toLowerCase();
-                
-                if (filterValue === 'all' || status === filterValue) {
-                    post.closest('.col-md-6').style.display = 'block';
-                } else {
-                    post.closest('.col-md-6').style.display = 'none';
-                }
-            });
-        });
-        
-        // Submit post function
-        function submitPost() {
-            const form = document.getElementById('createPostForm');
-            if (form.checkValidity()) {
-                // Here you would normally send data to backend
-                alert('Post submitted successfully!');
-                bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
-                form.reset();
-                document.getElementById('itemDate').valueAsDate = new Date();
-            } else {
-                form.reportValidity();
-            }
-        }
+        loadPosts();
+    }
+
+    // Initial load
+    loadPosts();
+
+</script>
+
+
     </script>
+
+
 </body>
 </html>

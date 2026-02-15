@@ -27,7 +27,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             return;
         }
 
-        // 3️⃣ Login again after signup
+        //  Login again after signup
         const result = await supabaseClient.auth.signInWithPassword({ email, password });
         data = result.data;
         error = result.error;
@@ -38,7 +38,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         return;
     }
 
-    // 4️⃣ Success — user is logged in
+    //  Success — user is logged in
     console.log("Logged in user:", data.user);
     localStorage.setItem("currentUser", JSON.stringify(data.user));
 
