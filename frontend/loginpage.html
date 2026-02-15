@@ -43,11 +43,26 @@
             alert("Login successful ");
             // window.location.href = "homepage.html";
         });
+<<<<<<< HEAD
     </script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="login.js"></script>
 
+=======
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const supabaseUrl = 'https://pmolaajaloowazzmjhoi.supabase.co'
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2xhYWphbG9vd2F6em1qaG9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MjczNjcsImV4cCI6MjA4NjQwMzM2N30.cOMKqQ_4gjVdFsIYEFY0CwlRWWYgSBw09pLZ8Je41Wg'
+
+  const { createClient } = supabase
+  const supabaseClient = createClient(supabaseUrl, supabaseKey)
+
+  console.log("Supabase connected")
+</script>
+>>>>>>> feature/homepage
 
 </body>
 </html>
