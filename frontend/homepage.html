@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UHCL Lost & Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .post-card {
+            transition: transform 0.2s;
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .user-dropdown .dropdown-toggle::after {
+            display: none;
+        }
+        .sidebar-fab {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <div class="w-100 text-center">
+                <a class="navbar-brand fw-bold fs-4" href="#">UHCL LOST & FOUND</a>
+            </div>
+            
+            <div class="position-absolute end-0 me-3">
+                <div class="dropdown user-dropdown">
+                    <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span>user name</span>
+                        <i class="bi bi-chevron-down ms-2 small"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>user logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Posts Section -->
+            <div class="col-lg-9">
+                <!-- Filter Dropdown -->
+                <div class="mb-4">
+                    <select class="form-select w-auto" id="filterSelect">
+                        <option selected>Filter by...</option>
+                        <option value="lost">Lost Items</option>
+                        <option value="found">Found Items</option>
+                        <option value="claimed">Claimed Items</option>
+                        <option value="unclaimed">Unclaimed Items</option>
+                        <option value="all">All Items</option>
+                    </select>
+                </div>
+
+                <!-- Posts Grid -->
+                <div class="row" id="postsContainer">
+                    <!-- Posts will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="position-fixed" style="bottom: 2rem; right: 2rem; z-index: 1000;">
+        <button class="btn btn-primary floating-btn" data-bs-toggle="modal" data-bs-target="#createPostModal" title="Create Post">
+            <i class="bi bi-plus-lg fs-4"></i>
+        </button>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel">Create New Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createPostForm">
+                        <div class="mb-3">
+                            <label for="postType" class="form-label">Post Type</label>
+                            <select class="form-select" id="postType" required>
+                                <option value="">Select type...</option>
+                                <option value="lost">Lost Item</option>
+                                <option value="found">Found Item</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="itemTitle" class="form-label">Item Title</label>
+                            <input type="text" class="form-control" id="itemTitle" placeholder="e.g., Black leather wallet" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="itemDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="itemDescription" rows="3" placeholder="Provide detailed description of the item..." required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="itemLocation" class="form-label">Location</label>
+                                <select class="form-select" id="itemLocation" required>
+                                    <option value="">Select location...</option>
+                                    <option value="BAYOU">Bayou Building (BAYOU)</option>
+                                    <option value="ARBOR">Arbor Building (ARBOR)</option>
+                                    <option value="DELTA">Delta Building (DELTA)</option>
+                                    <option value="STEM">STEM and Classroom Building (STEM)</option>
+                                    <option value="SSCB">Student Services and Classroom Building (SSCB)</option>
+                                    <option value="RWC">Recreation and Wellness Center (RWC)</option>
+                                    <option value="HUNTER">Hunter Hall (HUNTER)</option>
+                                    <option value="UFA">University Forest Apartments (UFA)</option>
+                                    <option value="NOA">North Office Annex (NOA)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="itemPhoto" class="form-label">Item Photo (Optional)</label>
+                            <input type="file" class="form-control" id="itemPhoto" accept="image/*">
+                            <div class="mt-2">
+                                <img id="photoPreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitPost()">Submit Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://pmolaajaloowazzmjhoi.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2xhYWphbG9vd2F6em1qaG9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MjczNjcsImV4cCI6MjA4NjQwMzM2N30.cOMKqQ_4gjVdFsIYEFY0CwlRWWYgSBw09pLZ8Je41Wg'; // Replace with your actual Supabase anon key
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Location mapping
+        const locationMap = {
+            'BAYOU': 'Bayou Building (BAYOU)',
+            'ARBOR': 'Arbor Building (ARBOR)',
+            'DELTA': 'Delta Building (DELTA)',
+            'STEM': 'STEM and Classroom Building (STEM)',
+            'SSCB': 'Student Services and Classroom Building (SSCB)',
+            'RWC': 'Recreation and Wellness Center (RWC)',
+            'HUNTER': 'Hunter Hall (HUNTER)',
+            'UFA': 'University Forest Apartments (UFA)',
+            'NOA': 'North Office Annex (NOA)'
+        };
+
+        // Fetch items from database
+        async function fetchItems() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('items')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Error fetching items:', error);
+                return [];
+            }
+        }
+
+        // Render posts
+        function renderPosts(items) {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+
+            items.forEach(item => {
+                const statusBadge = item.status === 'claimed' ? 'Claimed' : item.type.charAt(0).toUpperCase() + item.type.slice(1);
+                const badgeClass = item.status === 'claimed' ? 'bg-info' : (item.type === 'lost' ? 'bg-warning' : 'bg-success');
+                const locationName = locationMap[item.location] || item.location;
+                const postedDate = new Date(item.created_at).toLocaleDateString();
+                
+                const postHtml = `
+                    <div class="col-md-6 mb-4" data-status="${item.type.toLowerCase()}" data-claimed="${item.status === 'claimed'}">
+                        <div class="card post-card h-100">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    ${item.photo_url ? 
+                                        `<img src="${item.photo_url}" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">` :
+                                        `<img src="https://picsum.photos/seed/${item.id}/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">`
+                                    }
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title">${item.title}</h5>
+                                            <span class="badge ${badgeClass} status-badge">${statusBadge}</span>
+                                        </div>
+                                        <p class="card-text small">
+                                            <strong>Item:</strong> ${item.title}<br>
+                                            <strong>Location:</strong> ${locationName}<br>
+                                            <strong>Date:</strong> ${new Date(item.created_at).toLocaleDateString()}
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Posted ${postedDate}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += postHtml;
+            });
+        }
+
+        // Submit post function
+        async function submitPost() {
+            const form = document.getElementById('createPostForm');
+            if (form.checkValidity()) {
+                try {
+                    const formData = {
+                        type: document.getElementById('postType').value,
+                        title: document.getElementById('itemTitle').value,
+                        description: document.getElementById('itemDescription').value,
+                        location: document.getElementById('itemLocation').value,
+                        status: 'unclaimed'
+                    };
+
+                    // Handle photo upload if needed
+                    const photoFile = document.getElementById('itemPhoto').files[0];
+                    if (photoFile) {
+                        // For now, we'll skip photo upload to Supabase storage
+                        // You can implement this later
+                        console.log('Photo upload skipped - implement storage later');
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('items')
+                        .insert([formData])
+                        .select();
+
+                    if (error) throw error;
+
+                    alert('Post submitted successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+                    form.reset();
+                    
+                    // Refresh posts
+                    loadPosts();
+                } catch (error) {
+                    console.error('Error submitting post:', error);
+                    alert('Error submitting post. Please try again.');
+                }
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        // Load posts on page load
+        async function loadPosts() {
+            const items = await fetchItems();
+            renderPosts(items);
+        }
+        
+        // Photo preview functionality
+        document.getElementById('itemPhoto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('photoPreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+        
+        // Filter functionality
+        document.getElementById('filterSelect').addEventListener('change', function() {
+            const filterValue = this.value;
+            const posts = document.querySelectorAll('#postsContainer > div');
+            
+            posts.forEach(post => {
+                const status = post.dataset.status;
+                const claimed = post.dataset.claimed === 'true';
+                
+                let show = false;
+                if (filterValue === 'all') {
+                    show = true;
+                } else if (filterValue === 'claimed') {
+                    show = status === 'claimed';
+                } else if (filterValue === 'unclaimed') {
+                    show = status === 'unclaimed';
+                } else {
+                    show = status === filterValue;
+                }
+                
+                post.style.display = show ? 'block' : 'none';
+            });
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', loadPosts);
+    </script>
+</body>
+</html>
