@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UHCL Lost & Found - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .dashboard-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+        }
+        .action-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            margin: 0 0.25rem;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .admin-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <!-- <a class="navbar-brand" href="#">
+                <i class="bi bi-search me-2"></i>UHCL Lost & Found
+            </a> -->
+            <div class="w-100 text-center">
+                <a class="navbar-brand fw-bold fs-4" href="#">UHCL LOST & FOUND</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center">
+                <span class="admin-badge me-3">ADMIN</span>
+                <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <!-- Dashboard Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="stat-number" id="totalLost">0</p>
+                            <p class="stat-label">Total Lost Items</p>
+                        </div>
+                        <i class="bi bi-question-circle" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="stat-number" id="totalFound">0</p>
+                            <p class="stat-label">Total Items Found</p>
+                        </div>
+                        <i class="bi bi-check-circle" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="stat-number" id="totalClaimed">0</p>
+                            <p class="stat-label">Total Claimed</p>
+                        </div>
+                        <i class="bi bi-hand-thumbs-up" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="stat-number" id="totalUnclaimed">0</p>
+                            <p class="stat-label">Total Unclaimed</p>
+                        </div>
+                        <i class="bi bi-clock" style="font-size: 2rem; opacity: 0.7;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">
+                    <i class="bi bi-table me-2"></i>Lost & Found Table
+                </h4>
+                <div class="d-flex align-items-center">
+                    <label class="me-2 mb-0">Filter:</label>
+                    <select class="form-select form-select-sm" id="filterSelect" style="width: auto;">
+                        <option value="all">All Items</option>
+                        <option value="lost">Lost Items</option>
+                        <option value="found">Found Items</option>
+                        <option value="claimed">Claimed Items</option>
+                        <option value="unclaimed">Unclaimed Items</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>TITLE</th>
+                            <th>TYPE</th>
+                            <th>LOCATION</th>
+                            <th>DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody">
+                        <!-- Items will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-5" style="display: none;">
+                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                <p class="text-muted mt-3">No items found</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://pmolaajaloowazzmjhoi.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2xhYWphbG9vd2F6em1qaG9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MjczNjcsImV4cCI6MjA4NjQwMzM2N30.cOMKqQ_4gjVdFsIYEFY0CwlRWWYgSBw09pLZ8Je41Wg';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Location mapping
+        const locationMap = {
+            'BAYOU': 'Bayou Building (BAYOU)',
+            'ARBOR': 'Arbor Building (ARBOR)',
+            'DELTA': 'Delta Building (DELTA)',
+            'STEM': 'STEM and Classroom Building (STEM)',
+            'SSCB': 'Student Services and Classroom Building (SSCB)',
+            'RWC': 'Recreation and Wellness Center (RWC)',
+            'HUNTER': 'Hunter Hall (HUNTER)',
+            'UFA': 'University Forest Apartments (UFA)',
+            'NOA': 'North Office Annex (NOA)'
+        };
+
+        // Fetch items from database
+        async function fetchItems() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('items')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Error fetching items:', error);
+                return [];
+            }
+        }
+
+        // Calculate statistics
+        function calculateStats(items) {
+            const stats = {
+                totalLost: items.filter(item => item.type === 'lost').length,
+                totalFound: items.filter(item => item.type === 'found').length,
+                totalClaimed: items.filter(item => item.status === 'claimed').length,
+                totalUnclaimed: items.filter(item => item.status === 'unclaimed').length
+            };
+            return stats;
+        }
+
+        // Update dashboard statistics
+        function updateDashboard(stats) {
+            document.getElementById('totalLost').textContent = stats.totalLost;
+            document.getElementById('totalFound').textContent = stats.totalFound;
+            document.getElementById('totalClaimed').textContent = stats.totalClaimed;
+            document.getElementById('totalUnclaimed').textContent = stats.totalUnclaimed;
+        }
+
+        // Render table
+        function renderTable(items) {
+            const tbody = document.getElementById('itemsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (items.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            tbody.innerHTML = '';
+
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                const locationName = locationMap[item.location] || item.location;
+                const createdDate = new Date(item.created_at).toLocaleDateString();
+                
+                // Status badge styling
+                let statusBadge = '';
+                if (item.status === 'claimed') {
+                    statusBadge = '<span class="badge bg-info status-badge">Claimed</span>';
+                } else if (item.type === 'lost') {
+                    statusBadge = '<span class="badge bg-warning status-badge">Unclaimed</span>';
+                } else {
+                    statusBadge = '<span class="badge bg-success status-badge">Unclaimed</span>';
+                }
+
+                row.innerHTML = `
+                    <td><strong>${item.title}</strong></td>
+                    <td><span class="badge ${item.type === 'lost' ? 'bg-warning' : 'bg-success'} status-badge">${item.type.toUpperCase()}</span></td>
+                    <td>${locationName}</td>
+                    <td>${createdDate}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        ${item.status !== 'claimed' ? 
+                            `<button class="btn btn-success btn-sm action-btn" onclick="claimItem(${item.id})">
+                                <i class="bi bi-check-circle me-1"></i>Claim
+                            </button>` : 
+                            '<span class="text-muted">-</span>'
+                        }
+                        <button class="btn btn-danger btn-sm action-btn" onclick="deleteItem(${item.id})">
+                            <i class="bi bi-trash me-1"></i>Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Claim item
+        async function claimItem(itemId) {
+            if (!confirm('Are you sure you want to mark this item as claimed?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('items')
+                    .update({ status: 'claimed' })
+                    .eq('id', itemId);
+
+                if (error) throw error;
+                
+                alert('Item marked as claimed successfully!');
+                loadDashboard();
+            } catch (error) {
+                console.error('Error claiming item:', error);
+                alert('Error claiming item. Please try again.');
+            }
+        }
+
+        // Delete item
+        async function deleteItem(itemId) {
+            if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('items')
+                    .delete()
+                    .eq('id', itemId);
+
+                if (error) throw error;
+                
+                alert('Item deleted successfully!');
+                loadDashboard();
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                alert('Error deleting item. Please try again.');
+            }
+        }
+
+        // Filter functionality
+        document.getElementById('filterSelect').addEventListener('change', function() {
+            const filterValue = this.value;
+            filterTable(filterValue);
+        });
+
+        function filterTable(filterValue) {
+            const rows = document.querySelectorAll('#itemsTableBody tr');
+            
+            rows.forEach(row => {
+                const type = row.cells[1].textContent.toLowerCase();
+                const status = row.cells[4].textContent.toLowerCase();
+                
+                let show = false;
+                if (filterValue === 'all') {
+                    show = true;
+                } else if (filterValue === 'lost' || filterValue === 'found') {
+                    show = type.includes(filterValue);
+                } else if (filterValue === 'claimed') {
+                    show = status.includes('claimed');
+                } else if (filterValue === 'unclaimed') {
+                    show = status.includes('unclaimed');
+                }
+                
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // In a real app, you would clear session/cookies
+                window.location.href = 'loginpage.html';
+            }
+        }
+
+        // Load dashboard
+        async function loadDashboard() {
+            const items = await fetchItems();
+            const stats = calculateStats(items);
+            updateDashboard(stats);
+            renderTable(items);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
