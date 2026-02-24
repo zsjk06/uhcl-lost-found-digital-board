@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .dashboard-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FFC107 100%);
             color: white;
             border-radius: 15px;
             padding: 1.5rem;
@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="dashboard-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #198754 100%);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="stat-number" id="totalFound">0</p>
@@ -103,7 +103,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="dashboard-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #0D6EFD 100%);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="stat-number" id="totalClaimed">0</p>
@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-                <div class="dashboard-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #0D6EFD 100%);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="stat-number" id="totalUnclaimed">0</p>
@@ -248,11 +248,11 @@
                 // Status badge styling
                 let statusBadge = '';
                 if (item.status === 'claimed') {
-                    statusBadge = '<span class="badge bg-info status-badge">Claimed</span>';
+                    statusBadge = '<span class="badge bg-primary status-badge">Claimed</span>';
                 } else if (item.type === 'lost') {
-                    statusBadge = '<span class="badge bg-warning status-badge">Unclaimed</span>';
+                    statusBadge = '<span class="badge bg-primary status-badge">Unclaimed</span>';
                 } else {
-                    statusBadge = '<span class="badge bg-success status-badge">Unclaimed</span>';
+                    statusBadge = '<span class="badge bg-primary status-badge">Unclaimed</span>';
                 }
 
                 row.innerHTML = `
@@ -263,10 +263,12 @@
                     <td>${statusBadge}</td>
                     <td>
                         ${item.status !== 'claimed' ? 
-                            `<button class="btn btn-success btn-sm action-btn" onclick="claimItem(${item.id})">
+                            `<button class="btn btn-primary btn-sm action-btn" onclick="claimItem(${item.id})">
                                 <i class="bi bi-check-circle me-1"></i>Claim
                             </button>` : 
-                            '<span class="text-muted">-</span>'
+                            `<button class="btn btn-primary btn-sm action-btn" onclick="unclaimed(${item.id})">
+                                <i class=bi bi-trash me-1"></i>Unclaim</button>`
+                            
                         }
                         <button class="btn btn-danger btn-sm action-btn" onclick="deleteItem(${item.id})">
                             <i class="bi bi-trash me-1"></i>Delete
@@ -297,6 +299,31 @@
                 console.error('Error claiming item:', error);
                 alert('Error claiming item. Please try again.');
             }
+        }
+
+        //unclaim item
+        async function unclaimed(itemId){
+            if (!confirm('Are you sure you want to unclaim this item?')) {
+                return;
+            }
+
+            try {
+                const {error} = await supabaseClient
+                .from('items')
+                .update({status: 'unclaimed'}).eq('id',itemId)
+                .eq('status', 'claimed');
+
+                if (error) throw error;
+
+                alert("Item successfully claimed!");
+                loadDashboard();
+
+            }
+            catch (error) {
+                console.error("Error unclaiming item: ",error);
+                alert("Error uncaliming item. Please try again.");
+            }
+
         }
 
         // Delete item
