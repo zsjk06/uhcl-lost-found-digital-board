@@ -4,7 +4,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const { createClient } = supabase;
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-document.getElementById("loginForm").addEventListener("submit", async function(e) {
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
@@ -27,7 +27,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             return;
         }
 
-        // 3️⃣ Login again after signup
+        //  Login again after signup
         const result = await supabaseClient.auth.signInWithPassword({ email, password });
         data = result.data;
         error = result.error;
@@ -38,10 +38,21 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         return;
     }
 
-    // 4️⃣ Success — user is logged in
+    //  Success — user is logged in
     console.log("Logged in user:", data.user);
     localStorage.setItem("currentUser", JSON.stringify(data.user));
 
     alert("Login successful!");
     window.location.href = "./homepage.html"; // uncomment when homepage ready
+
+    //Role selection
+    const role = document.getElementById("roleSelect").value;
+
+
+    if (role === "admin") {
+        window.location.href = "adminviewpage.html";   // admin page name 
+    } else {
+        window.location.href = "homepage.html";    // normal user home
+    }
+
 });
