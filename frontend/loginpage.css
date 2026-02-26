@@ -77,17 +77,3 @@ button {
 button:hover {
     background-color: #005fa3;
 }
-/* Dropdown*/
-.login-card select {
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  background-color: white;
-}
-
-.login-card select:focus {
-  border-color: #0077cc;
-  outline: none;
-}
