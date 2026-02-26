@@ -4,7 +4,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const { createClient } = supabase;
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-document.getElementById("loginForm").addEventListener("submit", async function(e) {
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
@@ -44,4 +44,15 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
     alert("Login successful!");
     window.location.href = "./homepage.html"; // uncomment when homepage ready
+
+
+
+    //Role selection
+    const role = document.getElementById("roleSelect").value;
+
+    if (role === "admin") {
+        window.location.href = "adminviewpage.html";   // change if your admin page name differs
+    } else {
+        window.location.href = "homepage.html";    // your normal user home
+    }
 });
