@@ -1,0 +1,10 @@
+[33md9759f3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/login-page[m[33m, [m[1;31morigin/feature/login-page[m[33m)[m HEAD@{0}: reset: moving to origin/feature/login-page
+[33m8b02e5c[m HEAD@{1}: merge origin/feature/adminpage: Merge made by the 'ort' strategy.
+[33md9759f3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/login-page[m[33m, [m[1;31morigin/feature/login-page[m[33m)[m HEAD@{2}: checkout: moving from feature/login-page to feature/login-page
+[33md9759f3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/login-page[m[33m, [m[1;31morigin/feature/login-page[m[33m)[m HEAD@{3}: revert: Revert "Updated login page for admin view"
+[33mc740bfd[m HEAD@{4}: checkout: moving from feature/login-page to feature/login-page
+[33mc740bfd[m HEAD@{5}: checkout: moving from feature/adminpage to feature/login-page
+[33m0ba23b7[m[33m ([m[1;31morigin/feature/adminpage[m[33m, [m[1;32mfeature/adminpage[m[33m)[m HEAD@{6}: checkout: moving from feature/login-page to feature/adminpage
+[33mc740bfd[m HEAD@{7}: reset: moving to c740bfd
+[33m1825b91[m HEAD@{8}: checkout: moving from feature/login-page to feature/login-page
+[33m1825b91[m HEAD@{9}: checkout: moving from feature/adminpage to feature/login-page
