@@ -8,15 +8,16 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
-    if (!username) {
+    const password = document.getElementById('password').value.trim();
+    if (!username || !password) {
         alert("Please enter your UHCL username.");
         return;
     }
 
     const email = username + "@uhcl.edu";
-    const password = "UHCL_MVP_2026";
+    
 
-    // Try login first
+    // login 
     let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     // If login fails (new user), create account silently
@@ -38,7 +39,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         return;
     }
 
-    // 4️⃣ Success — user is logged in
+    //  Success
     console.log("Logged in user:", data.user);
     localStorage.setItem("currentUser", JSON.stringify(data.user));
 
@@ -51,8 +52,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const role = document.getElementById("roleSelect").value;
 
     if (role === "admin") {
-        window.location.href = "adminviewpage.html";   // change if your admin page name differs
+        window.location.href = "adminviewpage.html";   
     } else {
-        window.location.href = "homepage.html";    // your normal user home
+        window.location.href = "homepage.html";   
     }
 });
