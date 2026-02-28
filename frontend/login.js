@@ -40,8 +40,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     }
 
 
-    //  Success
->>>>>>> feature/login-page
+    //  Success feature/login-page
     console.log("Logged in user:", data.user);
     localStorage.setItem("currentUser", JSON.stringify(data.user));
 

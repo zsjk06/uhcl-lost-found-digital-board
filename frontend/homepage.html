@@ -74,11 +74,12 @@
                     <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button"
                         id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle me-2"></i>
-                        <span id="usernameDisplay">user name</span>
+                        <span>user name</span>
                         <i class="bi bi-chevron-down ms-2 small"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#" id="logoutbtn"><i class="bi bi-box-arrow-right me-2"></i>user logout</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>user logout</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -232,9 +233,8 @@
             container.innerHTML = '';
 
             items.forEach(item => {
-                const statusBadge = item.status === 'claimed' ? 'Claimed' : `${item.type.charAt(0).toUpperCase() + item.type.slice(1)} / Unclaimed`;
+                const statusBadge = item.status === 'claimed' ? 'Claimed' : item.type.charAt(0).toUpperCase() + item.type.slice(1);
                 const badgeClass = item.status === 'claimed' ? 'bg-info' : (item.type === 'lost' ? 'bg-warning' : 'bg-success');
-
                 const locationName = locationMap[item.location] || item.location;
                 const postedDate = new Date(item.created_at).toLocaleDateString();
 
@@ -315,21 +315,7 @@
             }
         }
 
-        //load current user
-        async function loadUser() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-
-    if (user) {
-        document.getElementById('usernameDisplay').textContent = user.email;
-    } else {
-        window.location.href = "loginpage.html";
-    }
-}
-
-loadUser();
-
-
-        // Load posts on page load
+        // Load posts on page load - updated
         async function loadPosts() {
             const items = await fetchItems();
 
@@ -393,18 +379,35 @@ loadUser();
             });
         });
 
-        //logout funciton
-        const logoutBtn = document.getElementById('logoutbtn');
-        logoutBtn.addEventListener('click', async () => {
-    // Sign out from Supabase
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) {
-        console.error('Logout error:', error.message);
-    } else {
-        // Redirect to login page
-        window.location.href = 'loginpage.html';
-    }
-});
+        // ===============================
+        // CHATBOT QUERY FILTER SUPPORT
+        // ===============================
+
+        // Read ?q=wallet,keys from URL
+        function getQueryFilter() {
+            const params = new URLSearchParams(window.location.search);
+            const q = (params.get("q") || "").trim().toLowerCase();
+
+            if (!q) return [];
+
+            return q.split(",").map(s => s.trim()).filter(Boolean);
+        }
+
+        // Show / hide Clear Search button
+        function showOrHideClearButton() {
+            const q = getQueryFilter();
+            const btn = document.getElementById("clearSearchBtn");
+
+            if (!btn) return;
+
+            btn.style.display = (q && q.length) ? "inline-block" : "none";
+
+            btn.addEventListener("click", () => {
+                const url = new URL(window.location.href);
+                url.searchParams.delete("q");
+                window.location.href = url.pathname;
+            });
+        }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', loadPosts);
