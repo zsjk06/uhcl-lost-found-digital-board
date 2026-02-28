@@ -4,19 +4,20 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const { createClient } = supabase;
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-document.getElementById("loginForm").addEventListener("submit", async function(e) {
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
-    if (!username) {
+    const password = document.getElementById('password').value.trim();
+    if (!username || !password) {
         alert("Please enter your UHCL username.");
         return;
     }
 
     const email = username + "@uhcl.edu";
-    const password = "UHCL_MVP_2026";
+    
 
-    // Try login first
+    // login 
     let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     // If login fails (new user), create account silently
@@ -38,10 +39,23 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         return;
     }
 
-    //  Success — user is logged in
+
+    //  Success
+>>>>>>> feature/login-page
     console.log("Logged in user:", data.user);
     localStorage.setItem("currentUser", JSON.stringify(data.user));
 
     alert("Login successful!");
     window.location.href = "./homepage.html"; // uncomment when homepage ready
+
+
+
+    //Role selection
+    const role = document.getElementById("roleSelect").value;
+
+    if (role === "admin") {
+        window.location.href = "adminviewpage.html";   
+    } else {
+        window.location.href = "homepage.html";   
+    }
 });
