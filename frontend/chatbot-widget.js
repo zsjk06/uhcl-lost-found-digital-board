@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <button id="chatbotClose" aria-label="Close chatbot">✕</button>
       </div>
 
+
       <div class="chatbot-messages" id="chatbotMessages"></div>
+
 
       <div class="chatbot-input">
         <input id="chatbotInput" type="text" placeholder="Type here… (ex: I lost my wallet)" />
@@ -43,5 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
 
+
   document.body.insertAdjacentHTML("beforeend", chatbotWindowHTML);
 });
+

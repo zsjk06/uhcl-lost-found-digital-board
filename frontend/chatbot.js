@@ -1,135 +1,171 @@
 
-/*const ITEMS_LIST_PAGE = "homepage.html";
+// CHATBOT LOGIC (FAQ + SEARCH LINKS)
+
+const ITEMS_LIST_PAGE = "homepage.html";
+
 function normalize(text) {
-  return (text || "")
-    .toLowerCase()
-    .replace(/[^\w\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+    return (text || "")
+        .toLowerCase()
+        .replace(/[^\w\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
 function addMessage(type, html) {
-  const container = document.getElementById("chatbotMessages");
-  const row = document.createElement("div");
-  row.className = `msg ${type}`;
+    const container = document.getElementById("chatbotMessages");
+    if (!container) return;
 
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.innerHTML = html;
+    const row = document.createElement("div");
+    row.className = `msg ${type}`;
 
-  row.appendChild(bubble);
-  container.appendChild(row);
-  container.scrollTop = container.scrollHeight;
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = html;
+
+    row.appendChild(bubble);
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
 }
-
+// Detect lost item
 function isLostIntent(msg) {
-  const t = normalize(msg);
-  return (
-    t.includes("i lost") ||
-    t.includes("lost my") ||
-    t.includes("missing") ||
-    t.includes("can't find") ||
-    t.includes("cant find") ||
-    t.includes("can’t find")
-  );
+    const t = normalize(msg);
+    return (
+        t.includes("i lost") ||
+        t.includes("lost my") ||
+        t.includes("missing") ||
+        t.includes("can't find") ||
+        t.includes("cant find") ||
+        t.includes("can’t find")
+    );
 }
 
+// Detect if user FOUND an item
+function isFoundIntent(msg) {
+    const t = normalize(msg);
+    return (
+        t.includes("i found") ||
+        t.includes("found a") ||
+        t.includes("found an") ||
+        t.includes("i have found") ||
+        t.includes("picked up") ||
+        t.includes("found item")
+    );
+}
+/**
+ * Extracting multiple keywords from a message.
+ * Example: "I lost my wallet and keys" => ["wallet", "keys"]
+ */
 function extractKeywords(msg) {
-  const t = normalize(msg);
+    const t = normalize(msg);
 
-  // Recognized items (add more any time)
-  const keywords = [
-    "wallet", "purse", "bag", "backpack",
-    "keys", "key",
-    "id", "id card", "student id", "employee id",
-    "phone", "iphone", "android",
-    "laptop", "charger", "airpods", "earbuds",
-    "water bottle", "bottle",
-    "book", "notebook"
-  ];
+    // Can add more keywords
+    const keywords = [
+        "wallet", "purse", "bag", "backpack",
+        "keys", "key",
+        "id", "id card", "student id", "employee id",
+        "phone", "iphone", "android",
+        "laptop", "charger", "airpods", "earbuds",
+        "water bottle", "bottle",
+        "book", "notebook"
+    ];
 
-  const found = [];
-
-  // capture all matches (not just first)
-  for (const k of keywords) {
-    if (t.includes(normalize(k))) found.push(k);
-  }
-
-  // De-duplicate
-  return [...new Set(found)];
-}
-
-// FAQ list
-const FAQS = [
-  {
-    match: ["how do i post", "how to post", "post item", "add item", "report lost", "report found"],
-    answer: "To post an item: click on the Post Item button, fill the required details, and submit."
-  },
-  {
-    match: ["how do i claim", "how to claim", "claim item", "claim", "contact poster", "contact"],
-    answer: "To claim an item: open the item post and use the claim/contact option (backend connection comes next)."
-  },
-  {
-    match: ["how long", "60 days", "kept", "discard", "throw away", "unclaimed"],
-    answer: "Unclaimed items are typically held for 60 days before being discarded (based on the policy mentioned in the proposal)."
-  },
-  {
-    match: ["who can use", "students", "faculty", "staff"],
-    answer: "Students, faculty, and staff can use the platform to post, search, and claim lost/found items."
-  },
-  {
-    match: ["admin", "dashboard", "remove posts", "monitor"],
-    answer: "Admins can monitor posts, remove outdated posts, and manage system activity."
-  }
-];
-
-function faqAnswer(msg) {
-  const t = normalize(msg);
-  for (const f of FAQS) {
-    if (f.match.some(k => t.includes(normalize(k)))) return f.answer;
-  }
-  return null;
-}
-
-function botRespond(userText) {
-  // 1) Lost item intent → link to filtered list (supports multiple keywords)
-  if (isLostIntent(userText)) {
-    const kws = extractKeywords(userText);
-
-    // ✅ Scenario 1: user says "lost something" but we can't detect item
-    if (!kws.length) {
-      addMessage(
-        "bot",
-        `I’m sorry! I couldn’t find any matching items in the UHCL Lost & Found at the moment. 🙂
-You may try checking again later or post a lost item report.<br/>`
-      );
-      return;
+    const found = [];
+    for (const k of keywords) {
+        if (t.includes(normalize(k))) found.push(k);
     }
 
-    // ✅ Scenario 2: user mentions multiple items
-    const q = encodeURIComponent(kws.join(","));  // "key,wallet"
-    const link = `${ITEMS_LIST_PAGE}?q=${q}`;
+    // Deduplicate
+    return [...new Set(found)];
+}
 
-    addMessage(
-      "bot",
-      `I can help. Here are posts that match: <b>${kws.join(", ")}</b><br/>
+
+// FAQ section
+
+const FAQS = [
+    {
+        match: ["how do i post", "how to post", "post item", "add item", "report lost", "report found"],
+        answer: `To post an item, click the <b>+</b> button at the bottom-right, fill the form, and submit.`
+    },
+    {
+        match: ["how do i claim", "how to claim", "claim item", "claim", "contact"],
+        answer: `To claim an item, visit the mentioned building in the claim or contact the admin.`
+    },
+    {
+        match: ["how long", "kept", "60 days", "unclaimed", "discard"],
+        answer: `Unclaimed items are typically held for around <b>60 days</b> before being discarded.`
+    },
+    {
+        match: ["who can use", "students", "faculty", "staff"],
+        answer: `Students, faculty, and staff can use the platform to post, search, and claim lost/found items.`
+    },
+    {
+        match: ["admin", "dashboard", "remove", "monitor"],
+        answer: `Admins can monitor posts, remove outdated items, and manage system activity.`
+    }
+];
+
+function getFaqAnswer(msg) {
+    const t = normalize(msg);
+    for (const f of FAQS) {
+        if (f.match.some(k => t.includes(normalize(k)))) return f.answer;
+    }
+    return null;
+}
+
+// Main bot response
+function botRespond(userText) {
+    // 0) Found item intent
+    if (isFoundIntent(userText)) {
+        addMessage(
+            "bot",
+            `That's great that you found an item 🙌<br/><br/>
+       You can help by:<br/>
+       • Clicking the <b>+</b> button at the bottom right<br/>
+       • Filling out the form and submitting the details<br/><br/>
+       OR<br/><br/>
+       You can directly walk to the <b>UHCL Lost & Found Booth</b> and hand the item to the admin.<br/><br/>
+       Thank you for helping keep our campus organized 🙂`
+        );
+        return;
+    }
+    // 1) Lost item intent → search link
+    if (isLostIntent(userText)) {
+        const kws = extractKeywords(userText);
+
+        // If we cannot detect any known keywords
+        if (!kws.length) {
+            addMessage(
+                "bot",
+                `Sorry!! I cannot find what you are searching for 😞
+Please contact the admin for further assistance.`
+            );
+            return;
+        }
+
+        // Multi-keyword query: q=wallet,keys
+        const q = encodeURIComponent(kws.join(","));
+        const link = `${ITEMS_LIST_PAGE}?q=${q}`;
+
+        addMessage(
+            "bot",
+            `I can help. Here are posts that match: <b>${kws.join(", ")}</b><br/>
        <a href="${link}">View matching items</a>`
-    );
-    return;
-  }
+        );
+        return;
+    }
 
-  // 2) FAQ intent
-  const faq = faqAnswer(userText);
-  if (faq) {
-    addMessage("bot", faq);
-    return;
-  }
+    // 2) FAQ intent
+    const faq = getFaqAnswer(userText);
+    if (faq) {
+        addMessage("bot", faq);
+        return;
+    }
 
-  // ✅ Scenario 1 (non-lost, non-faq): friendly fallback
-  addMessage(
-    "bot",
-    `I’m not sure I understood that yet. 🙂<br/>
-     You can try:<br/>
+    // 3) Friendly fallback
+    addMessage(
+        "bot",
+        `I’m not sure I understood that yet 🙂<br/>
+     Try:<br/>
      • "I lost my wallet"<br/>
      • "I lost my wallet and keys"<br/>
      • "How do I post an item?"<br/>
@@ -171,4 +207,4 @@ function initChatbot() {
   addMessage("bot", "Hi! I’m the Lost & Found assistant 🙂 Tell me what you lost, or ask a FAQ.");
 }
 
-document.addEventListener("DOMContentLoaded", initChatbot); */
+document.addEventListener("DOMContentLoaded", initChatbot); 

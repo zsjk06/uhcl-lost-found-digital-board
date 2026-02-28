@@ -1,8 +1,8 @@
-/*  
-/* Floating chatbot button 
+/*Floating chatbot button */
+
 
 .chatbot-btn {
-  width: 60px; 
+  width: 60px;
   height: 60px;
   border-radius: 50%;
   border: none;
@@ -24,11 +24,12 @@
   background: #005fa3;
 }
 
-/* CHAT WINDOW 
+
+/* CHAT WINDOW */
 .chatbot-window {
   position: fixed;
   right: 2rem;
-  bottom: 9.5rem; /* opens above the two stacked buttons 
+  bottom: 9.5rem; /* opens above the two stacked buttons */
   width: 340px;
   max-width: calc(100vw - 36px);
   background: #fff;
@@ -40,9 +41,11 @@
   border: 1px solid #e5e7eb;
 }
 
+
 .chatbot-window.open { display: block; }
 
-/* Header 
+
+/* Header */
 .chatbot-header {
   background: #0077cc;
   color: #fff;
@@ -63,7 +66,8 @@
   cursor: pointer;
 }
 
-/* Messages area 
+
+/* Messages area */
 .chatbot-messages {
   padding: 12px;
   height: 280px;
@@ -96,14 +100,16 @@
   color: #fff;
 }
 
-/* links in bot bubble 
+
+/* links in bot bubble */
 .bubble a {
   color: #0b74de;
   text-decoration: underline;
   font-weight: 700;
 }
 
-/* Input area 
+
+/* Input area */
 .chatbot-input {
   display: flex;
   gap: 8px;
@@ -131,6 +137,7 @@
 }
 .chatbot-input button:hover { background: #005fa3; }
 
+
 @media (max-width: 420px) {
   .chatbot-window { width: 92vw; right: 4vw; }
-}  */
+}

@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UHCL Lost & Found</title>
+    <!-- CHATBOT CHANGE -->
+    <link rel="stylesheet" href="chatbot.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- CHATBOT CHANGE -->
+    <script src="chatbot-widget.js" defer></script>
+    <script src="chatbot.js" defer></script>
+
     <style>
         .status-badge {
             font-size: 0.8rem;
             padding: 0.25rem 0.5rem;
         }
+
         .post-card {
             transition: transform 0.2s;
         }
+
         .post-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .floating-btn {
             width: 60px;
             height: 60px;
@@ -27,16 +38,19 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
         }
+
         .floating-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
+
         .user-dropdown .dropdown-toggle::after {
             display: none;
         }
+
         .sidebar-fab {
             position: fixed;
             right: 2rem;
@@ -46,6 +60,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -53,10 +68,11 @@
             <div class="w-100 text-center">
                 <a class="navbar-brand fw-bold fs-4" href="#">UHCL LOST & FOUND</a>
             </div>
-            
+
             <div class="position-absolute end-0 me-3">
                 <div class="dropdown user-dropdown">
-                    <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center" type="button"
+                        id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle me-2"></i>
                         <span id="usernameDisplay">user name</span>
                         <i class="bi bi-chevron-down ms-2 small"></i>
@@ -84,6 +100,10 @@
                         <option value="unclaimed">Unclaimed Items</option>
                         <option value="all">All Items</option>
                     </select>
+                    <!-- CHATBOT FILTER CHANGE: Clear search button -->
+                    <button id="clearSearchBtn" class="btn btn-outline-secondary btn-sm ms-2" style="display:none;">
+                        Clear search
+                    </button>
                 </div>
 
                 <!-- Posts Grid -->
@@ -96,13 +116,15 @@
 
     <!-- Floating Action Button -->
     <div class="position-fixed" style="bottom: 2rem; right: 2rem; z-index: 1000;">
-        <button class="btn btn-primary floating-btn" data-bs-toggle="modal" data-bs-target="#createPostModal" title="Create Post">
+        <button class="btn btn-primary floating-btn" data-bs-toggle="modal" data-bs-target="#createPostModal"
+            title="Create Post">
             <i class="bi bi-plus-lg fs-4"></i>
         </button>
     </div>
 
     <!-- Create Post Modal -->
-    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -119,17 +141,19 @@
                                 <option value="found">Found Item</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="itemTitle" class="form-label">Item Title</label>
-                            <input type="text" class="form-control" id="itemTitle" placeholder="e.g., Black leather wallet" required>
+                            <input type="text" class="form-control" id="itemTitle"
+                                placeholder="e.g., Black leather wallet" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="itemDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="itemDescription" rows="3" placeholder="Provide detailed description of the item..." required></textarea>
+                            <textarea class="form-control" id="itemDescription" rows="3"
+                                placeholder="Provide detailed description of the item..." required></textarea>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="itemLocation" class="form-label">Location</label>
@@ -147,12 +171,13 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="itemPhoto" class="form-label">Item Photo (Optional)</label>
                             <input type="file" class="form-control" id="itemPhoto" accept="image/*">
                             <div class="mt-2">
-                                <img id="photoPreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; display: none;">
+                                <img id="photoPreview" src="" alt="Preview" class="img-thumbnail"
+                                    style="max-width: 200px; display: none;">
                             </div>
                         </div>
                     </form>
@@ -212,16 +237,16 @@
 
                 const locationName = locationMap[item.location] || item.location;
                 const postedDate = new Date(item.created_at).toLocaleDateString();
-                
+
                 const postHtml = `
                     <div class="col-md-6 mb-4" data-status="${item.type.toLowerCase()}" data-claimed="${item.status === 'claimed'}">
                         <div class="card post-card h-100">
                             <div class="row g-0">
                                 <div class="col-md-4">
-                                    ${item.photo_url ? 
-                                        `<img src="${item.photo_url}" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">` :
-                                        `<img src="https://picsum.photos/seed/${item.id}/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">`
-                                    }
+                                    ${item.photo_url ?
+                        `<img src="${item.photo_url}" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">` :
+                        `<img src="https://picsum.photos/seed/${item.id}/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">`
+                    }
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
@@ -278,7 +303,7 @@
                     alert('Post submitted successfully!');
                     bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
                     form.reset();
-                    
+
                     // Refresh posts
                     loadPosts();
                 } catch (error) {
@@ -307,17 +332,34 @@ loadUser();
         // Load posts on page load
         async function loadPosts() {
             const items = await fetchItems();
-            renderPosts(items);
+
+            const q = getQueryFilter();
+
+            if (q && q.length) {
+                const filtered = items.filter(item => {
+                    const title = (item.title || "").toLowerCase();
+                    const desc = (item.description || "").toLowerCase();
+
+                    // Multi-keyword search (ANY match)
+                    return q.some(term => title.includes(term) || desc.includes(term));
+                });
+
+                renderPosts(filtered);
+            } else {
+                renderPosts(items);
+            }
+
+            showOrHideClearButton();
         }
-        
+
         // Photo preview functionality
-        document.getElementById('itemPhoto').addEventListener('change', function(e) {
+        document.getElementById('itemPhoto').addEventListener('change', function (e) {
             const file = e.target.files[0];
             const preview = document.getElementById('photoPreview');
-            
+
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                 };
@@ -326,16 +368,16 @@ loadUser();
                 preview.style.display = 'none';
             }
         });
-        
+
         // Filter functionality
-        document.getElementById('filterSelect').addEventListener('change', function() {
+        document.getElementById('filterSelect').addEventListener('change', function () {
             const filterValue = this.value;
             const posts = document.querySelectorAll('#postsContainer > div');
-            
+
             posts.forEach(post => {
                 const status = post.dataset.status;
                 const claimed = post.dataset.claimed === 'true';
-                
+
                 let show = false;
                 if (filterValue === 'all') {
                     show = true;
@@ -346,7 +388,7 @@ loadUser();
                 } else {
                     show = status === filterValue;
                 }
-                
+
                 post.style.display = show ? 'block' : 'none';
             });
         });
@@ -368,4 +410,5 @@ loadUser();
         document.addEventListener('DOMContentLoaded', loadPosts);
     </script>
 </body>
+
 </html>
