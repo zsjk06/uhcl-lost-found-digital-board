@@ -196,7 +196,7 @@
         // Initialize Supabase
         const supabaseUrl = 'https://pmolaajaloowazzmjhoi.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtb2xhYWphbG9vd2F6em1qaG9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MjczNjcsImV4cCI6MjA4NjQwMzM2N30.cOMKqQ_4gjVdFsIYEFY0CwlRWWYgSBw09pLZ8Je41Wg'; // Replace with your actual Supabase anon key
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         // Location mapping
         const locationMap = {
@@ -240,7 +240,10 @@
                 const postedDate = new Date(item.created_at).toLocaleDateString();
 
                 const postHtml = `
-                    <div class="col-md-6 mb-4" data-status="${item.type.toLowerCase()}" data-claimed="${item.status === 'claimed'}">
+                    <div class="col-md-6 mb-4" 
+                    id="item-${item.id}" 
+                    data-status="${item.type.toLowerCase()}"
+                    data-claimed="${item.status === 'claimed'}">
                         <div class="card post-card h-100">
                             <div class="row g-0">
                                 <div class="col-md-4">
@@ -249,7 +252,7 @@
                         `<img src="https://picsum.photos/seed/${item.id}/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">`
                     }
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-8 item-card">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <h5 class="card-title">${item.title}</h5>

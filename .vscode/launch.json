@@ -7,7 +7,7 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Open adminviewpage.html",
+            "name": "Open loginpage.html",
             "file": "c:\\Users\\znab9\\OneDrive\\Desktop\\uhcl-lost-found-digital-board\\frontend\\homepage.html"
         }
     ]
