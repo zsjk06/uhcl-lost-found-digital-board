@@ -137,15 +137,13 @@
 }
 .chatbot-input button:hover { background: #005fa3; }
 
-/* Container for FAQ buttons to wrap nicely */
 .chatbot-messages .faq-category-container {
     display: flex;
-    flex-wrap: wrap;       /* wrap to next line if too many */
-    gap: 6px;              /* space between buttons */
+    flex-wrap: wrap;      
+    gap: 6px;              
     margin: 4px 0;
 }
 
-/* FAQ Category Buttons */
 .faq-category-btn {
     padding: 3px 5px;
     font-size: 11px;
@@ -163,7 +161,7 @@
     transform: scale(1.05);
 }
 
-/* Back button for FAQ categories */
+
 .faq-back-btn {
     padding: 5px 10px;
     font-size: 12px;
@@ -191,7 +189,7 @@
     border: none;
     cursor: pointer;
     transition: all 0.2s;
-     margin: 4px 0 4px 4px; /* top right bottom left */
+     margin: 4px 0 4px 4px; 
 }
 
 
