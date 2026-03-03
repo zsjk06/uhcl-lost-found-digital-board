@@ -281,68 +281,72 @@
 
         // Submit post function
         async function submitPost() {
-            const photoFile = document.getElementById('itemPhoto').files[0];
+    const form = document.getElementById('createPostForm');
 
-if (photoFile) {
-    const fileExt = photoFile.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-
-    const { error: uploadError } = await supabaseClient
-        .storage
-        .from('item-photos')
-        .upload(fileName, photoFile);
-
-    if (uploadError) {
-        console.error('Upload error:', uploadError.message);
-        alert('Image upload failed.');
+    if (!form.checkValidity()) {
+        form.reportValidity();
         return;
     }
 
-    const { data } = supabaseClient
-        .storage
-        .from('item-photos')
-        .getPublicUrl(fileName);
+    try {
+        let photoUrl = null; 
 
-    photoUrl = data.publicUrl;
-}
-            
-            const form = document.getElementById('createPostForm');
-            if (form.checkValidity()) {
-                try {
-                    const formData = {
-                        type: document.getElementById('postType').value,
-                        title: document.getElementById('itemTitle').value,
-                        description: document.getElementById('itemDescription').value,
-                        location: document.getElementById('itemLocation').value,
-                        status: 'unclaimed',
-                        photo_url: photoUrl
-                    };
+        const photoFile = document.getElementById('itemPhoto').files[0];
 
-                    // Handle photo upload if needed
-                
+        
+        if (photoFile) {
 
+            const fileExt = photoFile.name.split('.').pop();
+            const fileName =
+                `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-                    const { data, error } = await supabaseClient
-                        .from('items')
-                        .insert([formData])
-                        .select();
+            const { error: uploadError } = await supabaseClient
+                .storage
+                .from('item-photos')
+                .upload(fileName, photoFile);
 
-                    if (error) throw error;
-
-                    alert('Post submitted successfully!');
-                    bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
-                    form.reset();
-
-                    // Refresh posts
-                    loadPosts();
-                } catch (error) {
-                    console.error('Error submitting post:', error);
-                    alert('Error submitting post. Please try again.');
-                }
-            } else {
-                form.reportValidity();
+            if (uploadError) {
+                console.error("Upload error:", uploadError.message);
+                alert("Image upload failed.");
+                return;
             }
+
+            const { data } = supabaseClient
+                .storage
+                .from('item-photos')
+                .getPublicUrl(fileName);
+
+            photoUrl = data.publicUrl;
         }
+
+        const formData = {
+            type: document.getElementById('postType').value,
+            title: document.getElementById('itemTitle').value,
+            description: document.getElementById('itemDescription').value,
+            location: document.getElementById('itemLocation').value,
+            status: 'unclaimed',
+            photo_url: photoUrl
+        };
+
+        const { error } = await supabaseClient
+            .from('items')
+            .insert([formData]);
+
+        if (error) throw error;
+
+        alert("Post submitted successfully!");
+        bootstrap.Modal
+            .getInstance(document.getElementById('createPostModal'))
+            .hide();
+
+        form.reset();
+        loadPosts();
+
+    } catch (error) {
+        console.error("Error submitting post:", error);
+        alert("Error submitting post.");
+    }
+}
 
         //load current user
         async function loadUser() {
@@ -363,17 +367,12 @@ if (photoFile) {
 
             const q = getQueryFilter();
 
-
-
-
-
-
             if (q && q.length) {
                 const filtered = items.filter(item => {
                     const title = (item.title || "").toLowerCase();
                     const desc = (item.description || "").toLowerCase();
 
-                    // Multi-keyword search (ANY match)
+                   
                     return q.some(term => title.includes(term) || desc.includes(term));
                 });
 
@@ -386,7 +385,6 @@ if (photoFile) {
             showOrHideClearButton();
         }
 
-        // Photo preview functionality
         document.getElementById('itemPhoto').addEventListener('change', function (e) {
             const file = e.target.files[0];
             const preview = document.getElementById('photoPreview');
@@ -432,7 +430,7 @@ if (photoFile) {
         // CHATBOT QUERY FILTER SUPPORT
         // ===============================
 
-        // Read ?q=wallet,keys from URL
+   
         function getQueryFilter() {
             const params = new URLSearchParams(window.location.search);
             const q = (params.get("q") || "").trim().toLowerCase();
@@ -442,7 +440,7 @@ if (photoFile) {
             return q.split(",").map(s => s.trim()).filter(Boolean);
         }
 
-        // Show / hide Clear Search button
+       
         function showOrHideClearButton() {
             const q = getQueryFilter();
             const btn = document.getElementById("clearSearchBtn");
