@@ -248,9 +248,12 @@
                             <div class="row g-0">
                                 <div class="col-md-4">
                                     ${item.photo_url ?
-                        `<img src="${item.photo_url}" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">` :
-                        `<img src="https://picsum.photos/seed/${item.id}/200/150.jpg" class="img-fluid rounded-start h-100 object-fit-cover" alt="Item photo">`
-                    }
+    `<img src="${item.photo_url}" class="img-fluid rounded-start h-100 object-fit-cover">`
+    :
+    `<div class="d-flex align-items-center justify-content-center bg-light h-100 text-muted">
+        No Image
+     </div>`
+}
                                 </div>
                                 <div class="col-md-8 item-card">
                                     <div class="card-body">
@@ -278,6 +281,31 @@
 
         // Submit post function
         async function submitPost() {
+            const photoFile = document.getElementById('itemPhoto').files[0];
+
+if (photoFile) {
+    const fileExt = photoFile.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+    const { error: uploadError } = await supabaseClient
+        .storage
+        .from('item-photos')
+        .upload(fileName, photoFile);
+
+    if (uploadError) {
+        console.error('Upload error:', uploadError.message);
+        alert('Image upload failed.');
+        return;
+    }
+
+    const { data } = supabaseClient
+        .storage
+        .from('item-photos')
+        .getPublicUrl(fileName);
+
+    photoUrl = data.publicUrl;
+}
+            
             const form = document.getElementById('createPostForm');
             if (form.checkValidity()) {
                 try {
@@ -286,16 +314,13 @@
                         title: document.getElementById('itemTitle').value,
                         description: document.getElementById('itemDescription').value,
                         location: document.getElementById('itemLocation').value,
-                        status: 'unclaimed'
+                        status: 'unclaimed',
+                        photo_url: photoUrl
                     };
 
                     // Handle photo upload if needed
-                    const photoFile = document.getElementById('itemPhoto').files[0];
-                    if (photoFile) {
-                        // For now, we'll skip photo upload to Supabase storage
-                        // You can implement this later
-                        console.log('Photo upload skipped - implement storage later');
-                    }
+                
+
 
                     const { data, error } = await supabaseClient
                         .from('items')
