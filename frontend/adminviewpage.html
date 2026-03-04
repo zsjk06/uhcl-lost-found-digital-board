@@ -367,9 +367,9 @@
                 } else if (filterValue === 'lost' || filterValue === 'found') {
                     show = type.includes(filterValue);
                 } else if (filterValue === 'claimed') {
-                    show = status.includes('claimed');
+                    show = status === 'claimed';
                 } else if (filterValue === 'unclaimed') {
-                    show = status.includes('unclaimed');
+                    show = status === 'unclaimed';
                 }
                 
                 row.style.display = show ? '' : 'none';
