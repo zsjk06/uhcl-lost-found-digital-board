@@ -14,3 +14,4 @@ cd uhcl-lost-found-digital-board
 3. Login/test
    use pre-configured demo account:
    Admin: username: admin, password: UHCL_MVP_2026
+   for users: enter any username without @uhcl.edu and any password more than 6 characters.
